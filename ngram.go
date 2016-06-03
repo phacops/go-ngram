@@ -42,7 +42,7 @@ func (ngram *NGramIndex) splitInput(str string) ([]uint32, error) {
 	}
 	pad := ngram.pad
 	n := ngram.n
-	input := pad + str + pad
+	input := 2*pad + str + pad
 	prevIndexes := make([]int, maxN)
 	var counter int
 	results := make([]uint32, 0)
