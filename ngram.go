@@ -58,11 +58,14 @@ func (ngram *NGramIndex) splitInput(str string) ([]uint32, error) {
 		prevIndexes[counter%maxN] = index
 	}
 
+	inputLen := len(input)
+	inputb := []byte(input)
+
 	for i := n - 1; i > 1; i-- {
-		if len(input) >= i {
-			top := prevIndexes[(len(input)-i)%maxN]
-			substr := input[top:]
-			hash := murmur3.Sum32([]byte(substr))
+		if inputLen >= i {
+			top := prevIndexes[(inputLen-i)%maxN]
+			substr := inputb[top:]
+			hash := murmur3.Sum32(substr)
 			results = append(results, hash)
 		}
 	}
