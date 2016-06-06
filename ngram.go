@@ -3,6 +3,7 @@ package ngram
 import (
 	"errors"
 	"math"
+	"strings"
 	"sync"
 
 	"github.com/spaolacci/murmur3"
@@ -40,17 +41,17 @@ func (ngram *NGramIndex) splitInput(str string) ([]uint32, error) {
 	if len(str) == 0 {
 		return nil, errors.New("empty string")
 	}
-	pad := ngram.pad
-	n := ngram.n
-	input := 2*pad + str + pad
+
+	input := strings.Repeat(ngram.pad, 2) + str + ngram.pad
 	prevIndexes := make([]int, maxN)
-	var counter int
 	results := make([]uint32, 0)
+
+	var counter int
 
 	for index := range input {
 		counter++
-		if counter > n {
-			top := prevIndexes[(counter-n)%maxN]
+		if counter > ngram.n {
+			top := prevIndexes[(counter-ngram.n)%maxN]
 			substr := input[top:index]
 			hash := murmur3.Sum32([]byte(substr))
 			results = append(results, hash)
@@ -61,7 +62,7 @@ func (ngram *NGramIndex) splitInput(str string) ([]uint32, error) {
 	inputLen := len(input)
 	inputb := []byte(input)
 
-	for i := n - 1; i > 1; i-- {
+	for i := ngram.n - 1; i > 1; i-- {
 		if inputLen >= i {
 			top := prevIndexes[(inputLen-i)%maxN]
 			substr := inputb[top:]
